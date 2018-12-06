@@ -1,9 +1,7 @@
 # tor-formula
 
-Purpose of formula. Include a short description of what the formula does.
+The purpose of this formula is to manage the tor daemon on Debian systems.
 
-
-Describe in a readable form the states this formula supports with examples how to use those states.
 
 
 Install and setup brew:
