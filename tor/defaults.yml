@@ -2,4 +2,8 @@
 # Defaults for tor
 
 tor:
-  enabled: false
+  enabled: true
+  unique_default: 'value'
+  shared:
+    winner: 'default'
+    default: 'value'

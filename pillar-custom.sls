@@ -3,4 +3,8 @@
 
 tor:
   enabled: true
+  unique_custom: 'value'
+  shared:
+    winner: 'custom'
+    custom: 'value'
 

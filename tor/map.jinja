@@ -11,10 +11,13 @@ across all oscodenames (jessie, stretch, etc).
 {% set os_family_map = salt['grains.filter_by']({
         'Debian': {
           'pkg': 'tor',
+          'new_pkg': 'os_family_map',
+          'os_family_map' : 'no_key_contention',
+          'shared' : {
+            'winner': 'os_family_map',
+            'os_family_map': 'value',
+          },
         },
-        'Suse': {},
-        'Arch': {},
-        'RedHat': {},
   }
   , grain="os_family"
   , merge=salt['pillar.get']('tor:lookup'))
@@ -25,8 +28,34 @@ Setup variable using grains['oscodename'] based logic. Add key:value pairs here
 for configurations specific to os versions.
 #}
 {% set os_codename_map = salt['grains.filter_by']({
-        'jessie': {},
-        'stretch': {},
+        'jessie': {
+          'new_pkg': 'os_codename_map',
+          'os_codename': 'jessie',
+          'shared': {
+            'winner': 'os_codename_map',
+            'os_code_name': 'jessie',
+            'jessie_unique': 'value'
+          },
+        },
+        'stretch': {
+          'new_pkg': 'os_codename_map',
+          'os_codename': 'stretch',
+          'shared': {
+            'winner': 'os_codename_map',
+            'os_code_name': 'stretch',
+            'stretch_unique': 'value'
+          },
+        },
+        '*': {
+          'os_codename': 'glob',
+          'new_pkg': 'os_codename_map',
+          'os_codename_blob': 'value',
+          'shared': {
+            'winner': 'os_codename_map',
+            'os_code_name': 'glob',
+            'glob_unique': 'value'
+          },
+        },
   }
   , grain="oscodename"
   , merge=salt['pillar.get']('tor:lookup'))
@@ -34,7 +63,7 @@ for configurations specific to os versions.
 
 {# Merge the flavor_map to the default settings #}
 {% do default_settings.tor.update(os_family_map) %}
-#{% do default_settings.tor.update(os_codename_map) %}
+{% do default_settings.tor.update(os_codename_map) %}
 
 {# Merge in template:lookup pillar #}
 {% set tor = salt['pillar.get'](
@@ -43,3 +72,5 @@ for configurations specific to os versions.
         merge=True
     )
 %}
+
+
