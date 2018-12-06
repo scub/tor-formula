@@ -1,0 +1,45 @@
+# vim: ft=jinja
+# This file handles the merging of pillar data with the data from defaults
+
+{# Start with  defaults from defaults.yml #}
+{% import_yaml 'tor/defaults.yml' as default_settings %}
+
+{#
+Setup variable using grains['os_family'] based logic. This data will be shared
+across all oscodenames (jessie, stretch, etc).
+#}
+{% set os_family_map = salt['grains.filter_by']({
+        'Debian': {
+          'pkg': 'tor',
+        },
+        'Suse': {},
+        'Arch': {},
+        'RedHat': {},
+  }
+  , grain="os_family"
+  , merge=salt['pillar.get']('tor:lookup'))
+%}
+
+{#
+Setup variable using grains['oscodename'] based logic. Add key:value pairs here
+for configurations specific to os versions.
+#}
+{% set os_codename_map = salt['grains.filter_by']({
+        'jessie': {},
+        'stretch': {},
+  }
+  , grain="oscodename"
+  , merge=salt['pillar.get']('tor:lookup'))
+%}
+
+{# Merge the flavor_map to the default settings #}
+{% do default_settings.tor.update(os_family_map) %}
+#{% do default_settings.tor.update(os_codename_map) %}
+
+{# Merge in template:lookup pillar #}
+{% set tor = salt['pillar.get'](
+        'tor',
+        default=default_settings.tor,
+        merge=True
+    )
+%}

@@ -1,0 +1,35 @@
+# vim: ft=yaml
+---
+driver:
+  name: vagrant
+  customize: 
+    memory: 1024
+
+provisioner:
+  name: salt_solo
+  is_file_root: true
+  salt_copy_filter:
+    - .kitchen
+    - .git
+    - .vagrant
+  state_top:
+    base:
+      "*":
+        - test.mockup
+        - tor
+
+platforms:
+  - name: bento/debian-9
+
+suites:
+  - name: default
+
+  - name: custom
+    provisioner:
+      pillars-from-files:
+        tor.sls: pillar-custom.sls
+      pillars:
+        top.sls:
+          base:
+            "*":
+              - tor
